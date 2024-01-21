@@ -30,12 +30,12 @@ namespace Mod7FinPractice
             PickPointDelivery pickPointDelivery2 = new PickPointDelivery(customer2.Name, blitz2, pickPoint2.PickPointAddress);
             ShopDelivery shopDelivery1 = new ShopDelivery(customer1.Name, Shop1.ShopName, Shop1.ShopAddress);
             ShopDelivery shopDelivery2 = new ShopDelivery(customer1.Name, Shop2.ShopName, Shop2.ShopAddress);
-            Order<HomeDelivery, string> order1 = new Order<HomeDelivery, string>("D-114", homeDelivery1, customer1.Address, product1, russianPost1);
-            Order<HomeDelivery, int> order2 = new Order<HomeDelivery, int>(1354, homeDelivery2, customer2.Address, product2, russianPost2);
-            Order<PickPointDelivery, string> order3 = new Order<PickPointDelivery, string>("P13A446", pickPointDelivery1 ,pickPointDelivery1.Address,product3,blitz1);
-            Order<PickPointDelivery, int> order4 = new Order<PickPointDelivery,int>(1516341,pickPointDelivery2, pickPointDelivery2.Address,product4,blitz2);
-            Order<ShopDelivery, string> order5 = new Order<ShopDelivery, string>("N341M-15DF", shopDelivery1, Shop1.ShopAddress, product1);
-            Order<ShopDelivery, int> order6 = new Order<ShopDelivery, int>(16743224,shopDelivery2,Shop2.ShopAddress, product2);
+            Order<HomeDelivery, string> order1 = new Order<HomeDelivery, string>(customer1.Name,"D-114", homeDelivery1, customer1.Address, product1, russianPost1);
+            Order<HomeDelivery, int> order2 = new Order<HomeDelivery, int>(customer2.Name, 1354, homeDelivery2, customer2.Address, product2, russianPost2);
+            Order<PickPointDelivery, string> order3 = new Order<PickPointDelivery, string>(customer1.Name,"P13A446", pickPointDelivery1 ,pickPointDelivery1.Address,product3,blitz1);
+            Order<PickPointDelivery, int> order4 = new Order<PickPointDelivery,int>(customer2.Name,1516341,pickPointDelivery2, pickPointDelivery2.Address,product4,blitz2);
+            Order<ShopDelivery, string> order5 = new Order<ShopDelivery, string>(customer1.Name,"N341M-15DF", shopDelivery1, Shop1.ShopAddress, product1);
+            Order<ShopDelivery, int> order6 = new Order<ShopDelivery, int>(customer2.Name, 16743224,shopDelivery2,Shop2.ShopAddress, product2);
 
             order1.DisplayOrderInfo();
             Console.ReadKey();
@@ -53,14 +53,16 @@ namespace Mod7FinPractice
     }
     class Order<TDelivery, TNumb> where TDelivery : Delivery
     {
-        public TNumb Id;
-        public TDelivery Delivery;
-        public string DeliveryAddress;
-        public Product Product;
-        public CourierService CourierService;
+        private TNumb Id;
+        private TDelivery Delivery;
+        private string DeliveryAddress;
+        private Product Product;
+        private CourierService CourierService;
+        private string CustomerName;
 
-        public Order(TNumb Id, TDelivery Delivery, string DeliveryAddress, Product Product, CourierService CourierService = null)
+        public Order(string CustomerName, TNumb Id, TDelivery Delivery, string DeliveryAddress, Product Product, CourierService CourierService = null)
         {
+            this.CustomerName = CustomerName;
             this.Id = Id;
             this.Delivery = Delivery;
             this.DeliveryAddress = DeliveryAddress;
@@ -70,6 +72,7 @@ namespace Mod7FinPractice
 
         public void DisplayOrderInfo()
         {
+            Console.WriteLine($"Имя заказчика:{CustomerName}");
             Console.WriteLine($"Номер заказа:{Id}");
             if (Delivery is HomeDelivery)
             {
@@ -95,8 +98,10 @@ namespace Mod7FinPractice
     }
     class Product
     {
-        public string Name;
-        public double Price;
+        
+        public string Name {get;}
+
+        public double Price {get;}
 
         public Product(string Name, double Price) 
         { 
@@ -107,7 +112,7 @@ namespace Mod7FinPractice
     
     abstract class CourierService
     {
-        public string Name;
+        public string Name { get; protected set; }
         public double CostOfDelivery;
         
         public abstract double PickDeliveryType(string DeliveryUrg);
@@ -115,7 +120,7 @@ namespace Mod7FinPractice
 
     class RussianPost : CourierService
     {
-        public string DeliveryUrgency;
+        private string DeliveryUrgency;
         
 
         public RussianPost(string DeliveryUrgency)
@@ -147,7 +152,7 @@ namespace Mod7FinPractice
 
     class Blitzz : CourierService 
     { 
-        public string DeliveryUrgency;
+        private string DeliveryUrgency;
 
         public Blitzz(string DeliveryUrgency)
         {
@@ -176,8 +181,10 @@ namespace Mod7FinPractice
 
     class Customer
     {
-        public string Name;
-        public string Address;
+
+        public string Name {get;}
+
+        public string Address {get;}
 
         public Customer(string Name, string Address)
         {
@@ -188,7 +195,7 @@ namespace Mod7FinPractice
 
     abstract class Delivery 
     {
-        public string Address;
+        public string Address { get;}
         public Delivery(string Address)
         {
             this.Address = Address;
@@ -197,8 +204,8 @@ namespace Mod7FinPractice
 
     class HomeDelivery : Delivery
     {
-        public string clientName;
-        public CourierService CourierService;
+        private string clientName;
+        private CourierService CourierService;
 
         public HomeDelivery(string clientName, CourierService CourierService, string address) : base(address)
         {
@@ -210,8 +217,8 @@ namespace Mod7FinPractice
 
     class PickPointDelivery : Delivery
     {
-        public string clientName;
-        public CourierService CourierService;
+        private string clientName;
+        private CourierService CourierService;
 
         public PickPointDelivery(string clientName, CourierService CourierService, string address) : base (address)
         {
@@ -222,8 +229,8 @@ namespace Mod7FinPractice
 
     class ShopDelivery : Delivery
     {
-        public string clientName;
-        public string shopName;
+        private string clientName;
+        private string shopName;
 
         public ShopDelivery(string clientName, string shopName, string Address) : base (Address)
         {
@@ -236,7 +243,7 @@ namespace Mod7FinPractice
     {
         public string ShopName;
         public string ShopAddress;
-        public bool IsInStock;
+        private bool IsInStock;
 
         public Shop (string ShopName, string ShopAddress, bool IsInStock)
         {
